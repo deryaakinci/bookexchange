@@ -14,10 +14,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ModeToggle } from "./mode-toggle"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import { useCart } from "./cart/cart-context"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const isMobile = useMediaQuery("(max-width: 768px)")
+  const { items } = useCart()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -65,9 +67,14 @@ export default function Header() {
               </Link>
 
               <Link href="/cart">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="h-5 w-5" />
-                  <span className="sr-only">Cart</span>
+                  {items.length > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-600 text-xs text-white flex items-center justify-center">
+                      {items.length}
+                    </span>
+                  )}
+                  <span className="sr-only">Cart ({items.length} items)</span>
                 </Button>
               </Link>
 
@@ -171,9 +178,14 @@ export default function Header() {
                   </Button>
                 </Link>
                 <Link href="/cart" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="relative">
                     <ShoppingCart className="h-5 w-5" />
-                    <span className="sr-only">Cart</span>
+                    {items.length > 0 && (
+                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-600 text-xs text-white flex items-center justify-center">
+                        {items.length}
+                      </span>
+                    )}
+                    <span className="sr-only">Cart ({items.length} items)</span>
                   </Button>
                 </Link>
                 <Link href="/profile" onClick={() => setIsMenuOpen(false)}>

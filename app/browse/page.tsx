@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Heart, MapPin, Search, SlidersHorizontal, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { AddToCartButton } from "@/components/cart/add-to-cart-button"
+import { ExchangeButton } from "@/components/exchange/exchange-button"
 
 // Mock data for books
 const books = [
@@ -404,11 +406,31 @@ export default function BrowsePage() {
                   </div>
                 </CardContent>
                 <CardFooter className="p-4 pt-0 flex gap-2">
-                  <Link href={`/books/${book.id}`} className="w-full">
+                  <Link href={`/books/${book.id}`} className="flex-1">
                     <Button variant="outline" className="w-full text-xs">
                       View Details
                     </Button>
                   </Link>
+                  {book.sale && (
+                    <div className="flex-1">
+                      <AddToCartButton
+                        item={{
+                          id: book.id.toString(),
+                          title: book.title,
+                          price: book.price,
+                          image: book.image
+                        }}
+                      />
+                    </div>
+                  )}
+                  {book.exchange && (
+                    <div className="flex-1">
+                      <ExchangeButton
+                        bookId={book.id.toString()}
+                        bookTitle={book.title}
+                      />
+                    </div>
+                  )}
                 </CardFooter>
               </Card>
             ))

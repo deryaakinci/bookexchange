@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { CartProvider } from "@/components/cart/cart-context"
+import { ExchangeProvider } from "@/components/exchange/exchange-context"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import Script from "next/script"
@@ -29,12 +31,16 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+        <ThemeProvider>
+          <CartProvider>
+            <ExchangeProvider>
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </ExchangeProvider>
+          </CartProvider>
         </ThemeProvider>
         <Script id="register-sw" strategy="afterInteractive">
           {`
