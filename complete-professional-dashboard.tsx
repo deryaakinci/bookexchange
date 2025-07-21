@@ -1999,13 +1999,26 @@ function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: The
   ]
 
   const handlePresetSelect = (preset: any) => {
-    setCustomTheme({
+    const newTheme = {
       ...customTheme,
       backgroundColor: preset.backgroundColor,
       textColor: preset.textColor,
       accentColor: preset.accentColor,
       style: preset.style
-    })
+    }
+    setCustomTheme(newTheme)
+    // Apply immediately for live preview
+    setTheme(newTheme)
+  }
+
+  const handleColorChange = (colorType: string, value: string) => {
+    const newTheme = {
+      ...customTheme,
+      [colorType]: value
+    }
+    setCustomTheme(newTheme)
+    // Apply immediately for live preview
+    setTheme(newTheme)
   }
 
   const handleSaveTheme = async () => {
@@ -2087,13 +2100,13 @@ function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: The
                 <input
                   type="color"
                   value={customTheme.backgroundColor}
-                  onChange={(e) => setCustomTheme({...customTheme, backgroundColor: e.target.value})}
+                  onChange={(e) => handleColorChange('backgroundColor', e.target.value)}
                   className="w-16 h-12 rounded-xl border-2 border-slate-200 cursor-pointer"
                 />
                 <input
                   type="text"
                   value={customTheme.backgroundColor}
-                  onChange={(e) => setCustomTheme({...customTheme, backgroundColor: e.target.value})}
+                  onChange={(e) => handleColorChange('backgroundColor', e.target.value)}
                   className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                   placeholder="#ffffff"
                 />
@@ -2106,13 +2119,13 @@ function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: The
                 <input
                   type="color"
                   value={customTheme.textColor}
-                  onChange={(e) => setCustomTheme({...customTheme, textColor: e.target.value})}
+                  onChange={(e) => handleColorChange('textColor', e.target.value)}
                   className="w-16 h-12 rounded-xl border-2 border-slate-200 cursor-pointer"
                 />
                 <input
                   type="text"
                   value={customTheme.textColor}
-                  onChange={(e) => setCustomTheme({...customTheme, textColor: e.target.value})}
+                  onChange={(e) => handleColorChange('textColor', e.target.value)}
                   className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                   placeholder="#000000"
                 />
@@ -2125,13 +2138,13 @@ function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: The
                 <input
                   type="color"
                   value={customTheme.accentColor}
-                  onChange={(e) => setCustomTheme({...customTheme, accentColor: e.target.value})}
+                  onChange={(e) => handleColorChange('accentColor', e.target.value)}
                   className="w-16 h-12 rounded-xl border-2 border-slate-200 cursor-pointer"
                 />
                 <input
                   type="text"
                   value={customTheme.accentColor}
-                  onChange={(e) => setCustomTheme({...customTheme, accentColor: e.target.value})}
+                  onChange={(e) => handleColorChange('accentColor', e.target.value)}
                   className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                   placeholder="#3b82f6"
                 />
@@ -2154,7 +2167,7 @@ function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: The
               <label className="block text-sm font-semibold text-slate-700 mb-3">Header Font</label>
               <select
                 value={customTheme.headerFont}
-                onChange={(e) => setCustomTheme({...customTheme, headerFont: e.target.value})}
+                onChange={(e) => handleColorChange('headerFont', e.target.value)}
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="Inter">Inter (Modern)</option>
@@ -2169,7 +2182,7 @@ function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: The
               <label className="block text-sm font-semibold text-slate-700 mb-3">Body Font</label>
               <select
                 value={customTheme.bodyFont}
-                onChange={(e) => setCustomTheme({...customTheme, bodyFont: e.target.value})}
+                onChange={(e) => handleColorChange('bodyFont', e.target.value)}
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="Inter">Inter (Modern)</option>
@@ -2184,7 +2197,7 @@ function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: The
               <label className="block text-sm font-semibold text-slate-700 mb-3">Menu Style</label>
               <select
                 value={customTheme.style}
-                onChange={(e) => setCustomTheme({...customTheme, style: e.target.value})}
+                onChange={(e) => handleColorChange('style', e.target.value)}
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="modern">Modern (Clean & Minimal)</option>
