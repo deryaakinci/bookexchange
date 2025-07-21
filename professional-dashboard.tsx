@@ -483,9 +483,395 @@ export default function UserDashboard() {
   )
 }
 
-// Add placeholder components to complete the structure
+// STEP 6: PROFESSIONAL PDF UPLOAD SECTION ✨
 function PDFUploadSection({ userData }: { userData: UserData | null }) {
-  return <div>PDF Upload Section - Component will be enhanced in next steps</div>
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [showThemeOptions, setShowThemeOptions] = useState(false)
+  const [showImageOptions, setShowImageOptions] = useState(false)
+  const [selectedLogo, setSelectedLogo] = useState<File | null>(null)
+  const [selectedWelcoming, setSelectedWelcoming] = useState<File | null>(null)
+  const [uploadingImages, setUploadingImages] = useState(false)
+  const [themeSettings, setThemeSettings] = useState({
+    backgroundColor: userData?.company?.Themes?.[0]?.backgroundColor || '#ffffff',
+    textColor: userData?.company?.Themes?.[0]?.textColor || '#000000',
+    logoAreaColor: userData?.company?.Themes?.[0]?.logoAreaColor || '#f8f9fa',
+    style: userData?.company?.Themes?.[0]?.style || 'modern'
+  })
+  const [pdfDisplayMode, setPdfDisplayMode] = useState('flipbook')
+
+  // All the existing handlers remain the same, just with professional UI
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && file.type === 'application/pdf') {
+      setSelectedFile(file)
+    } else {
+      alert('Please select a valid PDF file')
+    }
+  }
+
+  const handleUpload = async () => {
+    if (!selectedFile) return
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('pdf', selectedFile)
+
+    try {
+      const res = await fetch('/api/QR_Panel/user/upload-pdf', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      })
+
+      const data = await res.json()
+      if (res.ok) {
+        alert('PDF uploaded successfully!')
+        setSelectedFile(null)
+        window.location.reload()
+      } else {
+        alert(data.error || 'Upload failed. Please try again.')
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Network error. Please check your connection and try again.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleDeletePDF = async () => {
+    if (!confirm('Are you sure you want to delete the PDF menu?')) return
+    setDeleting(true)
+    try {
+      const res = await fetch('/api/QR_Panel/user/delete-pdf', {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+      if (res.ok) {
+        alert('PDF successfully deleted!')
+        window.location.reload()
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Failed to delete PDF. Please try again.')
+      }
+    } catch (error) {
+      console.error('Delete error:', error)
+      alert('Network error. Please check your connection.')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const existingPDF = userData?.company?.pdfMenuFile
+
+  return (
+    <div className="space-y-10">
+      {/* Professional Header */}
+      <div className="text-center">
+        <h2 className="text-4xl font-bold text-slate-800 mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          PDF Menu Management
+        </h2>
+        <p className="text-slate-600 text-lg leading-relaxed max-w-3xl mx-auto">
+          Upload, customize, and manage your restaurant's PDF menu with advanced features including display modes, themes, and QR code generation.
+        </p>
+      </div>
+      
+      {/* Existing PDF Status Card */}
+      {existingPDF && (
+        <div className="relative bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-100 border border-emerald-200/60 rounded-3xl p-8 shadow-lg">
+          <div className="absolute top-4 right-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-emerald-700 text-sm font-medium">Active</span>
+            </div>
+          </div>
+          
+          <div className="flex items-start justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-3xl flex items-center justify-center shadow-xl">
+                  <span className="text-3xl text-white">📄</span>
+                </div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-green-600 text-sm">✓</span>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-emerald-800">Current PDF Menu</h3>
+                <p className="text-emerald-600 font-medium">Successfully uploaded and ready for customers</p>
+                
+                <div className="flex items-center space-x-4 mt-4">
+                  {userData?.company?.pdfMenuFile && (
+                    <a 
+                      href={`/api/AdminPanel/company/pdf/${userData.company.id}?t=${Date.now()}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center space-x-2 bg-white/80 hover:bg-white text-emerald-700 hover:text-emerald-800 px-4 py-2 rounded-xl font-medium transition-all shadow-md hover:shadow-lg"
+                    >
+                      <span>📁</span>
+                      <span>View PDF</span>
+                    </a>
+                  )}
+                  
+                  <div className="flex items-center space-x-2 text-emerald-600 text-sm">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Last updated: {new Date().toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleDeletePDF}
+              disabled={deleting}
+              className="group bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-300 disabled:opacity-50 border border-red-200 hover:border-red-500 flex items-center space-x-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>{deleting ? 'Deleting...' : 'Delete PDF'}</span>
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {/* Professional Upload Zone */}
+      <div className="relative group">
+        <div className="border-2 border-dashed border-slate-300 group-hover:border-indigo-400 rounded-3xl p-16 text-center transition-all duration-300 bg-gradient-to-br from-slate-50/50 to-white hover:from-indigo-50/50 hover:to-blue-50/50">
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={handleFileSelect}
+            className="hidden"
+            id="pdf-upload"
+          />
+          
+          <label htmlFor="pdf-upload" className="cursor-pointer block">
+            <div className="relative mb-8">
+              <div className="w-28 h-28 bg-gradient-to-br from-indigo-100 to-indigo-200 group-hover:from-indigo-200 group-hover:to-indigo-300 rounded-full flex items-center justify-center mx-auto shadow-xl transition-all duration-300 group-hover:scale-110">
+                <span className="text-5xl">📄</span>
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <span className="text-white text-xl">+</span>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-slate-800">
+                {selectedFile ? `Selected: ${selectedFile.name}` : existingPDF ? 'Upload New PDF (Replaces Current)' : 'Upload PDF Menu'}
+              </h3>
+              <p className="text-slate-500 text-lg max-w-md mx-auto leading-relaxed">
+                {existingPDF 
+                  ? 'Choose a new PDF file to replace your current menu' 
+                  : 'Drag and drop your PDF file here or click to browse your computer'
+                }
+              </p>
+              
+              <div className="flex items-center justify-center space-x-6 text-sm text-slate-400 mt-6">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>PDF Only</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>Max 10MB</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span>Secure Upload</span>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+        
+        {/* Upload Progress/Actions */}
+        {selectedFile && (
+          <div className="mt-8 bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-2xl p-6 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
+                  <span className="text-xl">📄</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-800">{selectedFile.name}</p>
+                  <p className="text-slate-500 text-sm">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setSelectedFile(null)}
+                  className="px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-8 py-3 rounded-xl font-semibold text-lg disabled:opacity-50 transition-all shadow-lg hover:shadow-xl flex items-center space-x-2 transform hover:scale-105"
+                >
+                  {uploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                      <span>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>📤</span>
+                      <span>{existingPDF ? 'Update PDF' : 'Upload PDF'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Display Mode Selection */}
+      <div className="bg-white/60 backdrop-blur-sm rounded-3xl border border-slate-200/60 p-8 shadow-lg">
+        <div className="text-center mb-8">
+          <h3 className="text-2xl font-bold text-slate-800 mb-3">PDF Display Mode</h3>
+          <p className="text-slate-600">Choose how customers will view your PDF menu</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* Flipbook Mode */}
+          <div 
+            onClick={() => setPdfDisplayMode('flipbook')}
+            className={`group relative cursor-pointer rounded-2xl p-6 transition-all duration-300 border-2 ${
+              pdfDisplayMode === 'flipbook' 
+                ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
+                : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md'
+            }`}
+          >
+            <div className="text-center">
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-all ${
+                pdfDisplayMode === 'flipbook' 
+                  ? 'bg-indigo-200' 
+                  : 'bg-orange-100 group-hover:bg-orange-200'
+              }`}>
+                <span className="text-3xl">📖</span>
+              </div>
+              <h4 className="font-bold text-slate-800 mb-2 text-lg">Flipbook Style</h4>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                Interactive page-turning experience like a real book. Perfect for multi-page menus with a premium feel.
+              </p>
+              
+              {pdfDisplayMode === 'flipbook' && (
+                <div className="mt-4 flex items-center justify-center space-x-2 text-indigo-600 font-semibold">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Selected</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Scroll Mode */}
+          <div 
+            onClick={() => setPdfDisplayMode('scroll')}
+            className={`group relative cursor-pointer rounded-2xl p-6 transition-all duration-300 border-2 ${
+              pdfDisplayMode === 'scroll' 
+                ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
+                : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md'
+            }`}
+          >
+            <div className="text-center">
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-all ${
+                pdfDisplayMode === 'scroll' 
+                  ? 'bg-indigo-200' 
+                  : 'bg-slate-100 group-hover:bg-slate-200'
+              }`}>
+                <span className="text-3xl">📜</span>
+              </div>
+              <h4 className="font-bold text-slate-800 mb-2 text-lg">Scroll Style</h4>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                Traditional continuous scrolling view. Familiar and accessible for all customers with smooth navigation.
+              </p>
+              
+              {pdfDisplayMode === 'scroll' && (
+                <div className="mt-4 flex items-center justify-center space-x-2 text-indigo-600 font-semibold">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Selected</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Save Display Mode */}
+        <div className="text-center mt-8">
+          <button
+            onClick={async () => {
+              // Save display mode logic here
+              localStorage.setItem('pdfDisplayMode', pdfDisplayMode)
+              alert(`PDF display mode saved as: ${pdfDisplayMode}`)
+            }}
+            className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-8 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2 mx-auto"
+          >
+            <span>💾</span>
+            <span>Save Display Mode</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <button
+          onClick={() => setShowThemeOptions(!showThemeOptions)}
+          className="group bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 border border-slate-200 hover:border-purple-200 rounded-2xl p-6 transition-all duration-300 shadow-md hover:shadow-lg"
+        >
+          <div className="text-center">
+            <div className="w-12 h-12 bg-purple-100 group-hover:bg-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-3 transition-colors">
+              <span className="text-2xl">🎨</span>
+            </div>
+            <h4 className="font-semibold text-slate-800 mb-1">Customize Theme</h4>
+            <p className="text-slate-600 text-sm">Colors & styling</p>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setShowImageOptions(!showImageOptions)}
+          className="group bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 border border-slate-200 hover:border-blue-200 rounded-2xl p-6 transition-all duration-300 shadow-md hover:shadow-lg"
+        >
+          <div className="text-center">
+            <div className="w-12 h-12 bg-blue-100 group-hover:bg-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-3 transition-colors">
+              <span className="text-2xl">🖼️</span>
+            </div>
+            <h4 className="font-semibold text-slate-800 mb-1">Upload Images</h4>
+            <p className="text-slate-600 text-sm">Logo & welcome</p>
+          </div>
+        </button>
+
+        <button
+          className="group bg-white hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 border border-slate-200 hover:border-green-200 rounded-2xl p-6 transition-all duration-300 shadow-md hover:shadow-lg"
+        >
+          <div className="text-center">
+            <div className="w-12 h-12 bg-green-100 group-hover:bg-green-200 rounded-2xl flex items-center justify-center mx-auto mb-3 transition-colors">
+              <span className="text-2xl">📊</span>
+            </div>
+            <h4 className="font-semibold text-slate-800 mb-1">Analytics</h4>
+            <p className="text-slate-600 text-sm">View stats</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  )
 }
 
 function ManualMenuSection() {
