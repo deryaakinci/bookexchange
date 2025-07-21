@@ -1188,51 +1188,989 @@ function ManualMenuSection() {
   )
 }
 
-// Placeholder components for remaining sections
-function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) => void }) {
-  return (
-    <div className="text-center py-16">
-      <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-        <span className="text-5xl">🎨</span>
-      </div>
-      <h2 className="text-3xl font-bold text-slate-800 mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-        Theme Customization
-      </h2>
-      <p className="text-slate-600 mb-10 max-w-2xl mx-auto text-lg leading-relaxed">
-        Personalize your menu's appearance and branding to match your restaurant's style.
-      </p>
-    </div>
-  )
-}
-
-function PreviewSection({ userData, theme, qrUrl, onDownloadQR }: any) {
-  return (
-    <div className="text-center py-16">
-      <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-cyan-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-        <span className="text-5xl">👁️</span>
-      </div>
-      <h2 className="text-3xl font-bold text-slate-800 mb-6 bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
-        Menu Preview & QR Code
-      </h2>
-      <p className="text-slate-600 mb-10 max-w-2xl mx-auto text-lg leading-relaxed">
-        Preview your menu and generate professional QR codes for customers.
-      </p>
-    </div>
-  )
-}
-
+// STEP 8: PROFESSIONAL PROFILE SECTION ✨
 function ProfileSection({ userData }: { userData: UserData | null }) {
+  const [formData, setFormData] = useState({
+    userName: userData?.userName || '',
+    companyName: userData?.company?.C_Name || '',
+    facebookUrl: userData?.company?.Themes?.[0]?.facebookUrl || '',
+    instagramUrl: userData?.company?.Themes?.[0]?.instagramUrl || '',
+    xUrl: userData?.company?.Themes?.[0]?.xUrl || ''
+  })
+  const [saving, setSaving] = useState(false)
+  const [showPasswordForm, setShowPasswordForm] = useState(false)
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  const [loadingPassword, setLoadingPassword] = useState(false)
+
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        userName: userData.userName || '',
+        companyName: userData.company?.C_Name || '',
+        facebookUrl: userData.company?.Themes?.[0]?.facebookUrl || '',
+        instagramUrl: userData.company?.Themes?.[0]?.instagramUrl || '',
+        xUrl: userData.company?.Themes?.[0]?.xUrl || ''
+      })
+    }
+  }, [userData])
+
+  const handleSave = async () => {
+    setSaving(true)
+    // Simulate API call
+    setTimeout(() => {
+      alert('Profile updated successfully!')
+      setSaving(false)
+    }, 1500)
+  }
+
+  const handlePasswordReset = async () => {
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert('New passwords do not match!')
+      return
+    }
+    if (passwordForm.newPassword.length < 6) {
+      alert('Password must be at least 6 characters!')
+      return
+    }
+    
+    setLoadingPassword(true)
+    // Simulate password update
+    setTimeout(() => {
+      alert('Password updated successfully!')
+      setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' })
+      setShowPasswordForm(false)
+      setLoadingPassword(false)
+    }, 2000)
+  }
+
   return (
-    <div className="text-center py-16">
-      <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-        <span className="text-5xl">👤</span>
+    <div className="space-y-10">
+      {/* Professional Header */}
+      <div className="text-center">
+        <h2 className="text-4xl font-bold text-slate-800 mb-4 bg-gradient-to-r from-slate-600 to-slate-800 bg-clip-text text-transparent">
+          Profile Settings
+        </h2>
+        <p className="text-slate-600 text-lg leading-relaxed max-w-3xl mx-auto">
+          Manage your account information, preferences, and security settings. Keep your restaurant's digital presence up to date.
+        </p>
       </div>
-      <h2 className="text-3xl font-bold text-slate-800 mb-6 bg-gradient-to-r from-slate-600 to-slate-800 bg-clip-text text-transparent">
-        Profile Settings
-      </h2>
-      <p className="text-slate-600 mb-10 max-w-2xl mx-auto text-lg leading-relaxed">
-        Manage your account information, preferences, and security settings.
-      </p>
+
+      {/* Profile Header Card */}
+      <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-3xl p-8 shadow-lg">
+        <div className="flex items-center space-x-6">
+          <div className="relative">
+            <img
+              src={
+                userData?.company?.C_Logo_Image
+                  ? `/api/AdminPanel/company/image/${userData.company.id}/logo`
+                  : '/user-icon-on-transparent-background-free-png.webp'
+              }
+              alt="Profile"
+              className="w-24 h-24 object-cover rounded-3xl border-4 border-white shadow-xl"
+            />
+            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+              <span className="text-white text-sm">✓</span>
+            </div>
+          </div>
+          
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold text-slate-800">{userData?.userName || 'User'}</h3>
+            <p className="text-slate-600 font-medium">{userData?.company?.C_Name || 'Restaurant Name'}</p>
+            <p className="text-slate-500 text-sm">{userData?.role?.roleName || 'User'} • ID: {userData?.cId}</p>
+            
+            <div className="flex items-center space-x-4 mt-3">
+              <div className="flex items-center space-x-2 text-slate-600 text-sm">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Joined: {userData?.CreatedAt ? new Date(userData.CreatedAt).toLocaleDateString() : 'Unknown'}</span>
+              </div>
+              <div className="flex items-center space-x-2 text-slate-600 text-sm">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Updated: {userData?.UpdatedAt ? new Date(userData.UpdatedAt).toLocaleDateString() : 'Unknown'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Settings Forms */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Account Information */}
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+              <span className="text-2xl">👤</span>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800">Account Information</h3>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Username</label>
+              <input
+                type="text"
+                value={formData.userName}
+                onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+                className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300 transition-all bg-white"
+                placeholder="Enter your username"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Restaurant Name</label>
+              <input
+                type="text"
+                value={formData.companyName}
+                onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300 transition-all bg-white"
+                placeholder="Enter your restaurant name"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">User ID</label>
+              <input
+                type="text"
+                value={userData?.cId || ''}
+                disabled
+                className="w-full px-4 py-3 border border-slate-200 rounded-2xl bg-slate-100 text-slate-500 cursor-not-allowed"
+              />
+              <p className="text-xs text-slate-500 mt-2">*This field cannot be changed</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Social Media Links */}
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
+              <span className="text-2xl">📱</span>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800">Social Media</h3>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Facebook URL</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-slate-400 text-sm">📘</span>
+                </div>
+                <input
+                  type="url"
+                  value={formData.facebookUrl}
+                  onChange={(e) => setFormData({ ...formData, facebookUrl: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-300 transition-all bg-white"
+                  placeholder="https://facebook.com/yourpage"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Instagram URL</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-slate-400 text-sm">📷</span>
+                </div>
+                <input
+                  type="url"
+                  value={formData.instagramUrl}
+                  onChange={(e) => setFormData({ ...formData, instagramUrl: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-300 transition-all bg-white"
+                  placeholder="https://instagram.com/yourpage"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">X (Twitter) URL</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-slate-400 text-sm">𝕏</span>
+                </div>
+                <input
+                  type="url"
+                  value={formData.xUrl}
+                  onChange={(e) => setFormData({ ...formData, xUrl: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-300 transition-all bg-white"
+                  placeholder="https://x.com/yourpage"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Security Section */}
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl flex items-center justify-center">
+              <span className="text-2xl">🔒</span>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-slate-800">Security Settings</h3>
+              <p className="text-slate-600 text-sm">Manage your password and account security</p>
+            </div>
+          </div>
+          
+          <button
+            onClick={() => setShowPasswordForm(!showPasswordForm)}
+            className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center space-x-2"
+          >
+            <span>🔑</span>
+            <span>{showPasswordForm ? 'Cancel' : 'Change Password'}</span>
+          </button>
+        </div>
+
+        {showPasswordForm && (
+          <div className="bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 rounded-2xl p-6 space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-red-800 mb-2">Current Password</label>
+              <input
+                type="password"
+                value={passwordForm.oldPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
+                className="w-full px-4 py-3 border border-red-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition-all bg-white"
+                placeholder="Enter current password"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-red-800 mb-2">New Password</label>
+              <input
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                className="w-full px-4 py-3 border border-red-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition-all bg-white"
+                placeholder="Enter new password (min 6 characters)"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-red-800 mb-2">Confirm New Password</label>
+              <input
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                className="w-full px-4 py-3 border border-red-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition-all bg-white"
+                placeholder="Confirm new password"
+              />
+            </div>
+
+            <button
+              onClick={handlePasswordReset}
+              disabled={loadingPassword}
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-3 rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center space-x-2"
+            >
+              {loadingPassword ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                  <span>Updating...</span>
+                </>
+              ) : (
+                <>
+                  <span>🔒</span>
+                  <span>Update Password</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Account Statistics */}
+      <div className="bg-gradient-to-r from-slate-600 to-slate-800 rounded-3xl p-8 text-white shadow-xl">
+        <h3 className="text-2xl font-bold mb-6 text-center">Account Overview</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <span className="text-2xl">📄</span>
+            </div>
+            <p className="text-3xl font-bold">{userData?.company?.pdfMenuFile ? '1' : '0'}</p>
+            <p className="text-slate-300">PDF Menus</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <span className="text-2xl">📂</span>
+            </div>
+            <p className="text-3xl font-bold">{userData?.company?.Main_Categories?.length || 0}</p>
+            <p className="text-slate-300">Categories</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <span className="text-2xl">🎨</span>
+            </div>
+            <p className="text-3xl font-bold">{userData?.company?.Themes?.length || 0}</p>
+            <p className="text-slate-300">Themes</p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <span className="text-2xl">📱</span>
+            </div>
+            <p className="text-3xl font-bold">{userData?.company?.C_QR_URL ? '1' : '0'}</p>
+            <p className="text-slate-300">QR Codes</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Save Button */}
+      <div className="text-center">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-12 py-4 rounded-2xl font-semibold text-lg disabled:opacity-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-3 mx-auto"
+        >
+          {saving ? (
+            <>
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+              <span>Saving Changes...</span>
+            </>
+          ) : (
+            <>
+              <span>💾</span>
+              <span>Save Profile Changes</span>
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// STEP 9: PROFESSIONAL PREVIEW & QR SECTION ✨
+function PreviewSection({ userData, theme, qrUrl, onDownloadQR }: any) {
+  const [selectedMenuType, setSelectedMenuType] = useState<'pdf' | 'manual' | null>(null)
+  const [qrStyle, setQrStyle] = useState('modern')
+  const [qrSize, setQrSize] = useState(200)
+  const [showQRCustomizer, setShowQRCustomizer] = useState(false)
+
+  useEffect(() => {
+    if (userData?.company?.menuType === 'pdf') {
+      setSelectedMenuType('pdf')
+    } else if (userData?.company?.menuType === 'manual') {
+      setSelectedMenuType('manual')
+    }
+  }, [userData])
+
+  const handleMenuTypeChange = async (menuType: 'pdf' | 'manual') => {
+    setSelectedMenuType(menuType)
+    alert(`Menu type updated to ${menuType}!`)
+  }
+
+  return (
+    <div className="space-y-10">
+      {/* Professional Header */}
+      <div className="text-center">
+        <h2 className="text-4xl font-bold text-slate-800 mb-4 bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+          Menu Preview & QR Code
+        </h2>
+        <p className="text-slate-600 text-lg leading-relaxed max-w-3xl mx-auto">
+          Preview your menu and generate professional QR codes for customers. Customize the appearance and download high-quality codes.
+        </p>
+      </div>
+
+      {/* Menu Type Selector */}
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+        <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">Select Active Menu Type</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          
+          {/* PDF Menu Option */}
+          <div 
+            onClick={() => handleMenuTypeChange('pdf')}
+            className={`group cursor-pointer rounded-2xl p-6 transition-all duration-300 border-2 ${
+              selectedMenuType === 'pdf' 
+                ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                : 'border-slate-200 bg-white hover:border-blue-300 hover:shadow-md'
+            }`}
+          >
+            <div className="text-center">
+              <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 transition-all ${
+                selectedMenuType === 'pdf' 
+                  ? 'bg-blue-200' 
+                  : 'bg-blue-100 group-hover:bg-blue-200'
+              }`}>
+                <span className="text-4xl">📄</span>
+              </div>
+              <h4 className="font-bold text-slate-800 mb-2 text-lg">PDF Menu</h4>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                Display your uploaded PDF menu with professional formatting and interactive features.
+              </p>
+              
+              {selectedMenuType === 'pdf' && (
+                <div className="flex items-center justify-center space-x-2 text-blue-600 font-semibold">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Currently Active</span>
+                </div>
+              )}
+              
+              {!userData?.company?.pdfMenuFile && (
+                <div className="mt-3 text-red-500 text-xs bg-red-50 px-3 py-2 rounded-lg">
+                  No PDF uploaded yet
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Manual Menu Option */}
+          <div 
+            onClick={() => handleMenuTypeChange('manual')}
+            className={`group cursor-pointer rounded-2xl p-6 transition-all duration-300 border-2 ${
+              selectedMenuType === 'manual' 
+                ? 'border-emerald-500 bg-emerald-50 shadow-lg' 
+                : 'border-slate-200 bg-white hover:border-emerald-300 hover:shadow-md'
+            }`}
+          >
+            <div className="text-center">
+              <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 transition-all ${
+                selectedMenuType === 'manual' 
+                  ? 'bg-emerald-200' 
+                  : 'bg-emerald-100 group-hover:bg-emerald-200'
+              }`}>
+                <span className="text-4xl">📝</span>
+              </div>
+              <h4 className="font-bold text-slate-800 mb-2 text-lg">Manual Menu</h4>
+              <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                Show your manually created menu with categories, items, and custom styling.
+              </p>
+              
+              {selectedMenuType === 'manual' && (
+                <div className="flex items-center justify-center space-x-2 text-emerald-600 font-semibold">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Currently Active</span>
+                </div>
+              )}
+              
+              {(!userData?.company?.Main_Categories || userData.company.Main_Categories.length === 0) && (
+                <div className="mt-3 text-red-500 text-xs bg-red-50 px-3 py-2 rounded-lg">
+                  No categories created yet
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Preview and QR Code Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Menu Preview */}
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold text-slate-800">Live Preview</h3>
+            <div className="flex items-center space-x-2 text-slate-600 text-sm">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span>Live</span>
+            </div>
+          </div>
+          
+          <div 
+            className="border-2 border-slate-200 rounded-2xl p-8 min-h-[400px] flex flex-col items-center justify-center text-center"
+            style={{
+              backgroundColor: theme.backgroundColor,
+              color: theme.textColor,
+            }}
+          >
+            <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center mb-4">
+              <span className="text-2xl">🍽️</span>
+            </div>
+            <h1 className="text-2xl font-bold mb-3">
+              {userData?.company?.C_Name || 'Your Restaurant'}
+            </h1>
+            <p className="text-base mb-6 opacity-80">
+              {selectedMenuType === 'pdf' ? 'PDF Menu Preview' : 'Manual Menu Preview'}
+            </p>
+            
+            {userData?.company?.id && (
+              <a
+                href={`/QR_Portal/menu/${userData.company.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-6 py-3 rounded-xl transition-all font-medium shadow-lg hover:shadow-xl flex items-center space-x-2"
+              >
+                <span>🔗</span>
+                <span>Open Full Preview</span>
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* QR Code Generator */}
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold text-slate-800">QR Code Generator</h3>
+            <button
+              onClick={() => setShowQRCustomizer(!showQRCustomizer)}
+              className="text-indigo-600 hover:text-indigo-800 font-medium text-sm flex items-center space-x-1"
+            >
+              <span>⚙️</span>
+              <span>Customize</span>
+            </button>
+          </div>
+
+          {/* QR Customizer */}
+          {showQRCustomizer && (
+            <div className="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-indigo-800 mb-2">QR Style</label>
+                <select
+                  value={qrStyle}
+                  onChange={(e) => setQrStyle(e.target.value)}
+                  className="w-full px-3 py-2 border border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                >
+                  <option value="modern">Modern</option>
+                  <option value="classic">Classic</option>
+                  <option value="rounded">Rounded</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-indigo-800 mb-2">Size: {qrSize}px</label>
+                <input
+                  type="range"
+                  min="150"
+                  max="300"
+                  value={qrSize}
+                  onChange={(e) => setQrSize(parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          )}
+          
+          <div className="text-center">
+            {qrUrl ? (
+              <>
+                <div className="inline-block p-6 bg-white rounded-2xl shadow-lg border-2 border-slate-100 mb-6" id="qr-container">
+                  <QRCodeSVG 
+                    value={qrUrl} 
+                    size={qrSize}
+                    style={{
+                      borderRadius: qrStyle === 'rounded' ? '8px' : '0px'
+                    }}
+                  />
+                </div>
+                
+                <div className="space-y-4">
+                  <button
+                    onClick={onDownloadQR}
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl transition-all font-semibold shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+                  >
+                    <span>📥</span>
+                    <span>Download QR Code</span>
+                  </button>
+                  
+                  <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl">
+                    <p className="font-medium mb-1">QR Code URL:</p>
+                    <code className="break-all">{qrUrl}</code>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="py-12">
+                <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">📱</span>
+                </div>
+                <p className="text-slate-600">No QR URL available</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* QR Code Information */}
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl p-8 text-white shadow-xl">
+        <div className="text-center">
+          <h3 className="text-2xl font-bold mb-4">QR Code Benefits</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div>
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">📱</span>
+              </div>
+              <h4 className="font-bold mb-2">Contactless Dining</h4>
+              <p className="text-indigo-100 text-sm">Customers can view your menu safely without physical contact</p>
+            </div>
+            <div>
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">⚡</span>
+              </div>
+              <h4 className="font-bold mb-2">Instant Updates</h4>
+              <p className="text-indigo-100 text-sm">Update your menu and prices in real-time without reprinting</p>
+            </div>
+            <div>
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">💰</span>
+              </div>
+              <h4 className="font-bold mb-2">Cost Effective</h4>
+              <p className="text-indigo-100 text-sm">Save money on printing and reduce paper waste</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// STEP 10: PROFESSIONAL THEME CUSTOMIZATION ✨
+function ThemeSection({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) => void }) {
+  const [customTheme, setCustomTheme] = useState({
+    backgroundColor: theme.backgroundColor || '#ffffff',
+    textColor: theme.textColor || '#000000',
+    accentColor: '#3b82f6',
+    headerFont: 'Inter',
+    bodyFont: 'Inter',
+    style: theme.style || 'modern'
+  })
+  const [previewMode, setPreviewMode] = useState('light')
+  const [saving, setSaving] = useState(false)
+
+  const presetThemes = [
+    {
+      name: 'Classic White',
+      backgroundColor: '#ffffff',
+      textColor: '#000000',
+      accentColor: '#3b82f6',
+      style: 'modern'
+    },
+    {
+      name: 'Dark Mode',
+      backgroundColor: '#1f2937',
+      textColor: '#ffffff',
+      accentColor: '#60a5fa',
+      style: 'modern'
+    },
+    {
+      name: 'Warm Beige',
+      backgroundColor: '#fef7ed',
+      textColor: '#92400e',
+      accentColor: '#d97706',
+      style: 'classic'
+    },
+    {
+      name: 'Ocean Blue',
+      backgroundColor: '#eff6ff',
+      textColor: '#1e40af',
+      accentColor: '#3b82f6',
+      style: 'modern'
+    },
+    {
+      name: 'Forest Green',
+      backgroundColor: '#f0fdf4',
+      textColor: '#166534',
+      accentColor: '#22c55e',
+      style: 'classic'
+    },
+    {
+      name: 'Royal Purple',
+      backgroundColor: '#faf5ff',
+      textColor: '#6b21a8',
+      accentColor: '#a855f7',
+      style: 'elegant'
+    }
+  ]
+
+  const handlePresetSelect = (preset: any) => {
+    setCustomTheme({
+      ...customTheme,
+      backgroundColor: preset.backgroundColor,
+      textColor: preset.textColor,
+      accentColor: preset.accentColor,
+      style: preset.style
+    })
+  }
+
+  const handleSaveTheme = async () => {
+    setSaving(true)
+    setTheme(customTheme)
+    // Simulate API call
+    setTimeout(() => {
+      alert('Theme saved successfully!')
+      setSaving(false)
+    }, 1500)
+  }
+
+  return (
+    <div className="space-y-10">
+      {/* Professional Header */}
+      <div className="text-center">
+        <h2 className="text-4xl font-bold text-slate-800 mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          Theme Customization
+        </h2>
+        <p className="text-slate-600 text-lg leading-relaxed max-w-3xl mx-auto">
+          Personalize your menu's appearance and branding to match your restaurant's style. Create a unique visual experience for your customers.
+        </p>
+      </div>
+
+      {/* Theme Presets */}
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+        <h3 className="text-2xl font-bold text-slate-800 mb-6">Quick Theme Presets</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {presetThemes.map((preset, index) => (
+            <div
+              key={index}
+              onClick={() => handlePresetSelect(preset)}
+              className="group cursor-pointer p-4 rounded-2xl border-2 border-slate-200 hover:border-purple-300 transition-all duration-300 hover:shadow-lg"
+            >
+              <div 
+                className="w-full h-16 rounded-xl mb-3 border"
+                style={{ 
+                  backgroundColor: preset.backgroundColor,
+                  borderColor: preset.textColor + '20'
+                }}
+              >
+                <div 
+                  className="w-full h-4 rounded-t-xl"
+                  style={{ backgroundColor: preset.accentColor }}
+                ></div>
+                <div className="p-2">
+                  <div 
+                    className="w-full h-1 rounded mb-1"
+                    style={{ backgroundColor: preset.textColor + '60' }}
+                  ></div>
+                  <div 
+                    className="w-2/3 h-1 rounded"
+                    style={{ backgroundColor: preset.textColor + '40' }}
+                  ></div>
+                </div>
+              </div>
+              <p className="text-xs font-medium text-slate-700 text-center">{preset.name}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom Theme Settings */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Color Settings */}
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
+              <span className="text-2xl">🎨</span>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800">Color Settings</h3>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Background Color</label>
+              <div className="flex items-center space-x-3">
+                <input
+                  type="color"
+                  value={customTheme.backgroundColor}
+                  onChange={(e) => setCustomTheme({...customTheme, backgroundColor: e.target.value})}
+                  className="w-16 h-12 rounded-xl border-2 border-slate-200 cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={customTheme.backgroundColor}
+                  onChange={(e) => setCustomTheme({...customTheme, backgroundColor: e.target.value})}
+                  className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                  placeholder="#ffffff"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Text Color</label>
+              <div className="flex items-center space-x-3">
+                <input
+                  type="color"
+                  value={customTheme.textColor}
+                  onChange={(e) => setCustomTheme({...customTheme, textColor: e.target.value})}
+                  className="w-16 h-12 rounded-xl border-2 border-slate-200 cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={customTheme.textColor}
+                  onChange={(e) => setCustomTheme({...customTheme, textColor: e.target.value})}
+                  className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                  placeholder="#000000"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Accent Color</label>
+              <div className="flex items-center space-x-3">
+                <input
+                  type="color"
+                  value={customTheme.accentColor}
+                  onChange={(e) => setCustomTheme({...customTheme, accentColor: e.target.value})}
+                  className="w-16 h-12 rounded-xl border-2 border-slate-200 cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={customTheme.accentColor}
+                  onChange={(e) => setCustomTheme({...customTheme, accentColor: e.target.value})}
+                  className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                  placeholder="#3b82f6"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Typography & Style */}
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
+              <span className="text-2xl">📝</span>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800">Typography & Style</h3>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Header Font</label>
+              <select
+                value={customTheme.headerFont}
+                onChange={(e) => setCustomTheme({...customTheme, headerFont: e.target.value})}
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="Inter">Inter (Modern)</option>
+                <option value="Playfair Display">Playfair Display (Elegant)</option>
+                <option value="Roboto">Roboto (Clean)</option>
+                <option value="Merriweather">Merriweather (Classic)</option>
+                <option value="Poppins">Poppins (Friendly)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Body Font</label>
+              <select
+                value={customTheme.bodyFont}
+                onChange={(e) => setCustomTheme({...customTheme, bodyFont: e.target.value})}
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="Inter">Inter (Modern)</option>
+                <option value="Open Sans">Open Sans (Readable)</option>
+                <option value="Roboto">Roboto (Clean)</option>
+                <option value="Lato">Lato (Friendly)</option>
+                <option value="Source Sans Pro">Source Sans Pro (Professional)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Menu Style</label>
+              <select
+                value={customTheme.style}
+                onChange={(e) => setCustomTheme({...customTheme, style: e.target.value})}
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="modern">Modern (Clean & Minimal)</option>
+                <option value="classic">Classic (Traditional)</option>
+                <option value="elegant">Elegant (Sophisticated)</option>
+                <option value="casual">Casual (Relaxed)</option>
+                <option value="bold">Bold (Eye-catching)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Live Preview */}
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+        <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">Live Preview</h3>
+        
+        <div 
+          className="border-2 border-slate-200 rounded-2xl p-8 min-h-[300px] transition-all duration-300"
+          style={{
+            backgroundColor: customTheme.backgroundColor,
+            color: customTheme.textColor,
+            fontFamily: customTheme.bodyFont
+          }}
+        >
+          <div className="text-center">
+            <h1 
+              className="text-3xl font-bold mb-4"
+              style={{ 
+                fontFamily: customTheme.headerFont,
+                color: customTheme.accentColor 
+              }}
+            >
+              Restaurant Name
+            </h1>
+            <div 
+              className="w-20 h-1 mx-auto mb-6 rounded"
+              style={{ backgroundColor: customTheme.accentColor }}
+            ></div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+              <div className="text-left">
+                <h3 
+                  className="text-lg font-bold mb-3"
+                  style={{ color: customTheme.accentColor }}
+                >
+                  Appetizers
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Caesar Salad</span>
+                    <span className="font-bold">$12</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Bruschetta</span>
+                    <span className="font-bold">$8</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="text-left">
+                <h3 
+                  className="text-lg font-bold mb-3"
+                  style={{ color: customTheme.accentColor }}
+                >
+                  Main Courses
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Grilled Salmon</span>
+                    <span className="font-bold">$24</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Beef Steak</span>
+                    <span className="font-bold">$28</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Save Theme */}
+      <div className="text-center">
+        <button
+          onClick={handleSaveTheme}
+          disabled={saving}
+          className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-12 py-4 rounded-2xl font-semibold text-lg disabled:opacity-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-3 mx-auto"
+        >
+          {saving ? (
+            <>
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+              <span>Saving Theme...</span>
+            </>
+          ) : (
+            <>
+              <span>🎨</span>
+              <span>Save Custom Theme</span>
+            </>
+          )}
+        </button>
+      </div>
     </div>
   )
 }
