@@ -4,6 +4,17 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { QRCodeSVG } from 'qrcode.react'
 
+// Add custom CSS for animations
+const customStyles = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+`
+
 interface UserData {
   id: string
   cId: number
@@ -184,7 +195,9 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
+    <>
+      <style dangerouslySetInnerHTML={{ __html: customStyles }} />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
       {/* STEP 2: PROFESSIONAL HEADER WITH GLASSMORPHISM ✨ */}
       <header className="bg-white/90 backdrop-blur-lg shadow-lg border-b border-slate-200/80 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -451,6 +464,7 @@ export default function UserDashboard() {
         </div>
       </div>
     </div>
+    </>
   )
 }
 
@@ -1711,17 +1725,24 @@ function PreviewSection({ userData, theme, qrUrl, onDownloadQR }: any) {
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-2xl font-bold text-slate-800">QR Code Generator</h3>
             <button
-              onClick={() => setShowQRCustomizer(!showQRCustomizer)}
-              className="text-indigo-600 hover:text-indigo-800 font-medium text-sm flex items-center space-x-1"
+              onClick={() => {
+                console.log('Customize button clicked, current state:', showQRCustomizer)
+                setShowQRCustomizer(!showQRCustomizer)
+              }}
+              className="text-indigo-600 hover:text-indigo-800 font-medium text-sm flex items-center space-x-1 transition-colors"
             >
               <span>⚙️</span>
-              <span>Customize</span>
+              <span>{showQRCustomizer ? 'Hide Options' : 'Customize'}</span>
             </button>
           </div>
 
           {/* QR Customizer */}
           {showQRCustomizer && (
-            <div className="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-4">
+            <div className="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-4 animate-fadeIn">
+              <div className="flex items-center space-x-2 mb-4">
+                <span className="text-indigo-600 text-lg">🎨</span>
+                <h4 className="text-lg font-bold text-indigo-800">QR Code Customization</h4>
+              </div>
               <div>
                 <label className="block text-sm font-semibold text-indigo-800 mb-2">QR Style</label>
                 <select
