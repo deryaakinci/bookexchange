@@ -1761,64 +1761,12 @@ function PreviewSection({ userData, theme, qrUrl, onDownloadQR }: any) {
                     </div>
                   ))
                 ) : (
-                  /* Sample Manual Menu Preview */
-                  <div className="space-y-6">
-                    <div className="border-b border-current border-opacity-20 pb-4">
-                      <h3 
-                        className="text-lg font-bold mb-3 text-center"
-                        style={{ color: theme.accentColor || '#3b82f6' }}
-                      >
-                        Appetizers
-                      </h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="font-medium">Caesar Salad</span>
-                            <p className="text-xs opacity-70 mt-1">Fresh romaine, parmesan, croutons</p>
-                          </div>
-                          <span className="font-bold ml-4">$12.99</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="font-medium">Bruschetta</span>
-                            <p className="text-xs opacity-70 mt-1">Toasted bread with tomato and basil</p>
-                          </div>
-                          <span className="font-bold ml-4">$8.99</span>
-                        </div>
-                      </div>
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <span className="text-xl opacity-50">📝</span>
                     </div>
-                    
-                    <div className="border-b border-current border-opacity-20 pb-4">
-                      <h3 
-                        className="text-lg font-bold mb-3 text-center"
-                        style={{ color: theme.accentColor || '#3b82f6' }}
-                      >
-                        Main Courses
-                      </h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="font-medium">Grilled Salmon</span>
-                            <p className="text-xs opacity-70 mt-1">With lemon butter and vegetables</p>
-                          </div>
-                          <span className="font-bold ml-4">$24.99</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="font-medium">Ribeye Steak</span>
-                            <p className="text-xs opacity-70 mt-1">12oz with mashed potatoes</p>
-                          </div>
-                          <span className="font-bold ml-4">$32.99</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="text-center py-4">
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-                        <p className="text-sm font-medium text-blue-800 mb-1">📝 Sample Manual Menu</p>
-                        <p className="text-xs text-blue-600">Go to Menu Management to create your actual menu</p>
-                      </div>
-                    </div>
+                    <p className="text-sm opacity-70 mb-2">No manual menu created yet</p>
+                    <p className="text-xs opacity-50">Go to Menu Management to add categories and items</p>
                   </div>
                 )}
               </div>
