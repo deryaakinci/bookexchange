@@ -401,7 +401,7 @@ export default function UserDashboard() {
                     </button>
                   </div>
                 ) : (
-                  <PDFUploadSection userData={userData} />
+                  <PDFUploadSection userData={userData} setActiveTab={setActiveTab} />
                 )}
               </div>
             )}
@@ -469,7 +469,7 @@ export default function UserDashboard() {
 }
 
 // STEP 6: PROFESSIONAL PDF UPLOAD SECTION ✨
-function PDFUploadSection({ userData }: { userData: UserData | null }) {
+function PDFUploadSection({ userData, setActiveTab }: { userData: UserData | null; setActiveTab: (tab: string) => void }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [deleting, setDeleting] = useState(false)
