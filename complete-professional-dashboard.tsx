@@ -401,13 +401,15 @@ export default function UserDashboard() {
                     </button>
                   </div>
                 ) : (
-                  <PDFUploadSection userData={userData} setActiveTab={setActiveTab} />
+                                      <PDFUploadSection userData={userData} />
                 )}
               </div>
             )}
 
+            {/* Manual Menu Section */}
             {activeTab === 'manual' && <ManualMenuSection />}
-            {activeTab === 'theme' && <ThemeSection theme={theme} setTheme={setTheme} />}
+            
+            {/* Preview Section */}
             {activeTab === 'preview' && (
               <PreviewSection 
                 userData={userData} 
@@ -416,7 +418,14 @@ export default function UserDashboard() {
                 onDownloadQR={downloadQR}
               />
             )}
+            
+            {/* Profile Section */}
             {activeTab === 'profile' && <ProfileSection userData={userData} />}
+            
+            {/* Theme Section - Always Visible */}
+            <div id="theme-section" className="mt-16">
+              <ThemeSection theme={theme} setTheme={setTheme} />
+            </div>
             
             {/* Enhanced Default Welcome Screen */}
             {!activeTab && (
@@ -469,7 +478,7 @@ export default function UserDashboard() {
 }
 
 // STEP 6: PROFESSIONAL PDF UPLOAD SECTION ✨
-function PDFUploadSection({ userData, setActiveTab }: { userData: UserData | null; setActiveTab: (tab: string) => void }) {
+function PDFUploadSection({ userData }: { userData: UserData | null }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -772,7 +781,12 @@ function PDFUploadSection({ userData, setActiveTab }: { userData: UserData | nul
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button
-          onClick={() => setActiveTab('theme')}
+          onClick={() => {
+            const themeSection = document.getElementById('theme-section');
+            if (themeSection) {
+              themeSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
           className="group bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 border border-slate-200 hover:border-purple-200 rounded-2xl p-6 transition-all duration-300 shadow-md hover:shadow-lg"
         >
           <div className="text-center">
