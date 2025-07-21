@@ -401,7 +401,7 @@ export default function UserDashboard() {
                     </button>
                   </div>
                 ) : (
-                                      <PDFUploadSection userData={userData} />
+                                                          <PDFUploadSection userData={userData} theme={theme} setTheme={setTheme} />
                 )}
               </div>
             )}
@@ -478,12 +478,13 @@ export default function UserDashboard() {
 }
 
 // STEP 6: PROFESSIONAL PDF UPLOAD SECTION ✨
-function PDFUploadSection({ userData }: { userData: UserData | null }) {
+function PDFUploadSection({ userData, theme, setTheme }: { userData: UserData | null; theme: any; setTheme: any }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
   const [showImageOptions, setShowImageOptions] = useState(false)
+  const [showThemeOptions, setShowThemeOptions] = useState(false)
   const [pdfDisplayMode, setPdfDisplayMode] = useState('flipbook')
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -781,12 +782,7 @@ function PDFUploadSection({ userData }: { userData: UserData | null }) {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button
-          onClick={() => {
-            const themeSection = document.getElementById('theme-section');
-            if (themeSection) {
-              themeSection.scrollIntoView({ behavior: 'smooth' });
-            }
-          }}
+          onClick={() => setShowThemeOptions(!showThemeOptions)}
           className="group bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 border border-slate-200 hover:border-purple-200 rounded-2xl p-6 transition-all duration-300 shadow-md hover:shadow-lg"
         >
           <div className="text-center">
@@ -821,6 +817,22 @@ function PDFUploadSection({ userData }: { userData: UserData | null }) {
           </div>
         </button>
       </div>
+
+      {/* Theme Options Section */}
+      {showThemeOptions && (
+        <div className="mt-8 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-8 shadow-lg">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold text-slate-800">Theme Customization</h3>
+            <button
+              onClick={() => setShowThemeOptions(false)}
+              className="text-slate-500 hover:text-slate-700 transition-colors"
+            >
+              <span className="text-2xl">✕</span>
+            </button>
+          </div>
+          <ThemeSection theme={theme} setTheme={setTheme} />
+        </div>
+      )}
     </div>
   )
 }
