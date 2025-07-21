@@ -486,6 +486,7 @@ function PDFUploadSection({ userData, theme, setTheme }: { userData: UserData | 
   const [showImageOptions, setShowImageOptions] = useState(false)
   const [showThemeOptions, setShowThemeOptions] = useState(false)
   const [pdfDisplayMode, setPdfDisplayMode] = useState('flipbook')
+  const [pdfFitMode, setPdfFitMode] = useState('fit-width')
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -764,17 +765,87 @@ function PDFUploadSection({ userData, theme, setTheme }: { userData: UserData | 
           </div>
         </div>
 
+        {/* PDF Sizing Options */}
+        <div className="mt-8 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6">
+          <h4 className="text-lg font-bold text-blue-800 mb-4 text-center">📏 PDF Sizing & Fit</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button
+              onClick={() => setPdfFitMode('fit-width')}
+              className={`p-3 rounded-xl text-sm font-medium transition-all ${
+                pdfFitMode === 'fit-width'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-100'
+              }`}
+            >
+              📐 Fit Width
+            </button>
+            <button
+              onClick={() => setPdfFitMode('fit-height')}
+              className={`p-3 rounded-xl text-sm font-medium transition-all ${
+                pdfFitMode === 'fit-height'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-100'
+              }`}
+            >
+              📏 Fit Height
+            </button>
+            <button
+              onClick={() => setPdfFitMode('fit-page')}
+              className={`p-3 rounded-xl text-sm font-medium transition-all ${
+                pdfFitMode === 'fit-page'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-100'
+              }`}
+            >
+              📄 Fit Page
+            </button>
+            <button
+              onClick={() => setPdfFitMode('actual-size')}
+              className={`p-3 rounded-xl text-sm font-medium transition-all ${
+                pdfFitMode === 'actual-size'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-100'
+              }`}
+            >
+              🔍 Actual Size
+            </button>
+          </div>
+          
+          <div className="mt-4 text-center">
+            <p className="text-blue-700 text-sm mb-3">
+              <strong>Current:</strong> {pdfFitMode.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </p>
+            
+            {/* Fit Mode Descriptions */}
+            <div className="text-xs text-blue-600 bg-white/50 rounded-lg p-3">
+              {pdfFitMode === 'fit-width' && (
+                <p>📐 <strong>Fit Width:</strong> PDF scales to fit the screen width. Best for mobile devices.</p>
+              )}
+              {pdfFitMode === 'fit-height' && (
+                <p>📏 <strong>Fit Height:</strong> PDF scales to fit the screen height. Good for desktop viewing.</p>
+              )}
+              {pdfFitMode === 'fit-page' && (
+                <p>📄 <strong>Fit Page:</strong> Entire page fits on screen. Best for overview viewing.</p>
+              )}
+              {pdfFitMode === 'actual-size' && (
+                <p>🔍 <strong>Actual Size:</strong> Shows PDF at original size. May require scrolling.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Save Display Mode */}
         <div className="text-center mt-8">
           <button
             onClick={() => {
               localStorage.setItem('pdfDisplayMode', pdfDisplayMode)
-              alert(`PDF display mode saved as: ${pdfDisplayMode}`)
+              localStorage.setItem('pdfFitMode', pdfFitMode)
+              alert(`PDF settings saved: ${pdfDisplayMode} mode with ${pdfFitMode} sizing`)
             }}
             className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-8 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2 mx-auto"
           >
             <span>💾</span>
-            <span>Save Display Mode</span>
+            <span>Save PDF Settings</span>
           </button>
         </div>
       </div>
