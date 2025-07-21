@@ -473,7 +473,7 @@ function PDFUploadSection({ userData }: { userData: UserData | null }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [showThemeOptions, setShowThemeOptions] = useState(false)
+
   const [showImageOptions, setShowImageOptions] = useState(false)
   const [pdfDisplayMode, setPdfDisplayMode] = useState('flipbook')
 
@@ -772,7 +772,7 @@ function PDFUploadSection({ userData }: { userData: UserData | null }) {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button
-          onClick={() => setShowThemeOptions(!showThemeOptions)}
+          onClick={() => setActiveTab('theme')}
           className="group bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 border border-slate-200 hover:border-purple-200 rounded-2xl p-6 transition-all duration-300 shadow-md hover:shadow-lg"
         >
           <div className="text-center">
