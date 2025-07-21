@@ -1690,32 +1690,181 @@ function PreviewSection({ userData, theme, qrUrl, onDownloadQR }: any) {
           </div>
           
           <div 
-            className="border-2 border-slate-200 rounded-2xl p-8 min-h-[400px] flex flex-col items-center justify-center text-center"
+            className="border-2 border-slate-200 rounded-2xl p-6 min-h-[400px] overflow-auto"
             style={{
               backgroundColor: theme.backgroundColor,
               color: theme.textColor,
             }}
           >
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center mb-4">
-              <span className="text-2xl">🍽️</span>
+            {/* Restaurant Header */}
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🍽️</span>
+              </div>
+              <h1 className="text-2xl font-bold mb-2">
+                {userData?.company?.C_Name || 'Your Restaurant'}
+              </h1>
+              <p className="text-sm opacity-70 mb-4">
+                {selectedMenuType === 'pdf' ? 'PDF Menu Preview' : 'Manual Menu Preview'}
+              </p>
             </div>
-            <h1 className="text-2xl font-bold mb-3">
-              {userData?.company?.C_Name || 'Your Restaurant'}
-            </h1>
-            <p className="text-base mb-6 opacity-80">
-              {selectedMenuType === 'pdf' ? 'PDF Menu Preview' : 'Manual Menu Preview'}
-            </p>
-            
+
+            {/* Menu Content Based on Type */}
+            {selectedMenuType === 'manual' ? (
+              <div className="space-y-6">
+                {userData?.company?.Main_Categories && userData.company.Main_Categories.length > 0 ? (
+                  userData.company.Main_Categories.map((category: any, index: number) => (
+                    <div key={index} className="border-b border-current border-opacity-20 pb-4 last:border-b-0">
+                      <h3 
+                        className="text-lg font-bold mb-3 text-center"
+                        style={{ color: theme.accentColor || '#3b82f6' }}
+                      >
+                        {category.categoryName || `Category ${index + 1}`}
+                      </h3>
+                      
+                      {category.Sub_Categories && category.Sub_Categories.length > 0 ? (
+                        category.Sub_Categories.map((subCategory: any, subIndex: number) => (
+                          <div key={subIndex} className="mb-4">
+                            <h4 className="font-semibold mb-2 opacity-90">
+                              {subCategory.subCategoryName || `Subcategory ${subIndex + 1}`}
+                            </h4>
+                            
+                            {subCategory.Items && subCategory.Items.length > 0 ? (
+                              <div className="space-y-2">
+                                {subCategory.Items.slice(0, 3).map((item: any, itemIndex: number) => (
+                                  <div key={itemIndex} className="flex justify-between items-center">
+                                    <div>
+                                      <span className="font-medium">{item.itemName || `Item ${itemIndex + 1}`}</span>
+                                      {item.itemDescription && (
+                                        <p className="text-xs opacity-70 mt-1">{item.itemDescription}</p>
+                                      )}
+                                    </div>
+                                    <span className="font-bold ml-4">
+                                      ${item.itemPrice || '0.00'}
+                                    </span>
+                                  </div>
+                                ))}
+                                {subCategory.Items.length > 3 && (
+                                  <p className="text-xs opacity-60 italic">
+                                    +{subCategory.Items.length - 3} more items...
+                                  </p>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-xs opacity-60 italic">No items in this category yet</p>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs opacity-60 italic text-center">No subcategories yet</p>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  /* Sample Manual Menu Preview */
+                  <div className="space-y-6">
+                    <div className="border-b border-current border-opacity-20 pb-4">
+                      <h3 
+                        className="text-lg font-bold mb-3 text-center"
+                        style={{ color: theme.accentColor || '#3b82f6' }}
+                      >
+                        Appetizers
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-medium">Caesar Salad</span>
+                            <p className="text-xs opacity-70 mt-1">Fresh romaine, parmesan, croutons</p>
+                          </div>
+                          <span className="font-bold ml-4">$12.99</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-medium">Bruschetta</span>
+                            <p className="text-xs opacity-70 mt-1">Toasted bread with tomato and basil</p>
+                          </div>
+                          <span className="font-bold ml-4">$8.99</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="border-b border-current border-opacity-20 pb-4">
+                      <h3 
+                        className="text-lg font-bold mb-3 text-center"
+                        style={{ color: theme.accentColor || '#3b82f6' }}
+                      >
+                        Main Courses
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-medium">Grilled Salmon</span>
+                            <p className="text-xs opacity-70 mt-1">With lemon butter and vegetables</p>
+                          </div>
+                          <span className="font-bold ml-4">$24.99</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="font-medium">Ribeye Steak</span>
+                            <p className="text-xs opacity-70 mt-1">12oz with mashed potatoes</p>
+                          </div>
+                          <span className="font-bold ml-4">$32.99</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center py-4">
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                        <p className="text-sm font-medium text-blue-800 mb-1">📝 Sample Manual Menu</p>
+                        <p className="text-xs text-blue-600">Go to Menu Management to create your actual menu</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : selectedMenuType === 'pdf' ? (
+              <div className="text-center py-8">
+                {userData?.company?.pdfMenuFile ? (
+                  <div>
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <span className="text-xl">📄</span>
+                    </div>
+                    <p className="text-sm opacity-70 mb-2">PDF Menu Active</p>
+                    <p className="text-xs opacity-50">Your uploaded PDF will be displayed to customers</p>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <span className="text-xl opacity-50">📄</span>
+                    </div>
+                    <p className="text-sm opacity-70 mb-2">No PDF uploaded yet</p>
+                    <p className="text-xs opacity-50">Go to PDF Menu Upload to add your menu</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <span className="text-xl opacity-50">🔄</span>
+                </div>
+                <p className="text-sm opacity-70 mb-2">Select a menu type above</p>
+                <p className="text-xs opacity-50">Choose PDF or Manual to see preview</p>
+              </div>
+            )}
+
+            {/* Full Preview Link */}
             {userData?.company?.id && (
-              <a
-                href={`/QR_Portal/menu/${userData.company.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-6 py-3 rounded-xl transition-all font-medium shadow-lg hover:shadow-xl flex items-center space-x-2"
-              >
-                <span>🔗</span>
-                <span>Open Full Preview</span>
-              </a>
+              <div className="mt-6 pt-4 border-t border-current border-opacity-20 text-center">
+                <a
+                  href={`/QR_Portal/menu/${userData.company.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-4 py-2 rounded-lg transition-all font-medium shadow-lg hover:shadow-xl text-sm"
+                >
+                  <span>🔗</span>
+                  <span>Open Full Preview</span>
+                </a>
+              </div>
             )}
           </div>
         </div>
